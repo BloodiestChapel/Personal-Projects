@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset = "utf-8">
+        <title>Snake Canvas Workshop</title>
+        <style>
+            * { padding: 0; margin: 0; }
+            canvas {background: #eeee; display: block; margin: 0 auto; }
+        </style>
+    </head>
+    <body>
+        <canvas id = "myCanvas" width = "640" height = "640"></canvas>
+        <script>
+            // JavaScript code goes here
+
+            // Get canvas ready
+            var canvas = document.getElementById("myCanvas");
+            var ctx = canvas.getContext("2d");
+            
+            // Controls
+            var leftKeyPressed = false;
+            var rightKeyPressed = false;
+            var upKeyPressed = false;
+            var downKeyPressed = false;
+
+            // Snake Parameters
+            var pixel = 16;
+
+            var snakeX = Math.ceil((Math.random() * canvas.width) / pixel) * pixel;
+            var snakeY = Math.ceil((Math.random() * canvas.height) / pixel) * pixel;
+
+            var preyX = Math.floor((Math.random() * canvas.width) / pixel) * pixel;
+            var preyY = Math.floor((Math.random() * canvas.height) / pixel) * pixel;
+
+            snakeX = constrainNumber(snakeX, pixel, (canvas.width - pixel));
+            snakeY = constrainNumber(snakeY, pixel, (canvas.height - pixel));
+
+            preyX = constrainNumber(preyX, pixel, (canvas.width - pixel));
+            preyY = constrainNumber(preyY, pixel, (canvas.height - pixel));
+
+            var snakeDx = 0;
+            var snakeDy = 0;
+
+            // Control Listeners
+            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keyup", keyUpHandler, false);
+
+            function keyDownHandler(e) {
+                if (e.key == "Right" || e.key == "ArrowRight") {
+                    rightKeyPressed = true;
+                }
+                else if (e.key == "Left" || e.key == "ArrowLeft"){
+                    leftKeyPressed = true;
+                }
+                else if (e.key == "Up" || e.key == "ArrowUp"){
+                    upKeyPressed = true;
+                }
+                else if (e.key == "Down" || e.key == "ArrowDown"){
+                    downKeyPressed = true;
+                }
+            }
+            
+            function keyUpHandler(e) {
+                if (e.key == "Right" || e.key == "ArrowRight") {
+                    rightKeyPressed = false;
+                }
+                else if (e.key == "Left" || e.key == "ArrowLeft"){
+                    leftKeyPressed = false;
+                }
+                else if (e.key == "Up" || e.key == "ArrowUp"){
+                    upKeyPressed = false;
+                }
+                else if (e.key == "Down" || e.key == "ArrowDown"){
+                    downKeyPressed = false;
+                }
+            }
+
+            // Score
+            var score = 0;
+
+            // Draw snake 
+            function drawSnake() {
+                ctx.fillStyle = "gray";
+                ctx.fillRect(snakeX, snakeY, pixel, pixel);
+                ctx.fill();
+                ctx.closePath();
+
+                moveSnake();
+                edgeRules();
+            }
+
+            // Draw prey
+            function drawPrey() {
+                ctx.fillStyle = "red";
+                ctx.fillRect(preyX, preyY, pixel, pixel);
+                ctx.fill();
+                ctx.closePath();
+
+                movePrey();
+            }
+            
+            // Move snake controls
+            function moveSnake() {
+                if (leftKeyPressed) {
+                    snakeDx = -pixel;
+                    snakeDy = 0;
+                }
+                else if (rightKeyPressed) {
+                    snakeDx = pixel;
+                    snakeDy = 0;
+                }
+                else if (upKeyPressed) {
+                    snakeDx = 0;
+                    snakeDy = -pixel;
+                }
+                else if (downKeyPressed) {
+                    snakeDx = 0;
+                    snakeDy = pixel;
+                }
+            }
+
+            // Move prey if eaten
+            function movePrey() {
+                if (snakeX === preyX && snakeY === preyY){
+                    preyX = Math.floor((Math.random() * canvas.width) / pixel) * pixel;
+                    preyY = Math.floor((Math.random() * canvas.height) / pixel) * pixel;
+
+                    preyX = constrainNumber(preyX, pixel, (canvas.width - pixel));
+                    preyY = constrainNumber(preyY, pixel, (canvas.height - pixel));
+                }
+            }
+
+            function edgeRules() {
+                if (snakeX >= canvas.width){
+                    snakeX = 0;
+                }
+                else if (snakeX < 0) {
+                    snakeX = canvas.width;
+                }
+                else if (snakeY >= canvas.height) {
+                    snakeY = 0;
+                }
+                else if (snakeY < 0) {
+                    snakeY = canvas.height;
+                }
+            }
+
+            // Needed so that snake and prey do not spawn out of view
+            function constrainNumber(val, min, max) {
+                return val > max ? max : val < min ? min : val;
+            }
+            
+            // Draw on canvas
+            function draw() {
+                // Clear canvas
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                drawPrey();
+                drawSnake();
+
+                snakeX += snakeDx;
+                snakeY += snakeDy;
+
+            }
+
+            // Loop draw function
+            var interval = setInterval(draw, 128);
+            
+        </script>
+    </body>
+</html>
