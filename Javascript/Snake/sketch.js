@@ -36,6 +36,9 @@ function draw() {
     textAlign(TOP, LEFT);
     textSize(16);
     text(`Score: ${snake.tailLength}`, 16, 32);
+    // text('James wins no matter what', 16, 64);
+    // text('Unless stiff knees is around', 16, 64);
+
 
     snake.update();
     snake.show();
